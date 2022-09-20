@@ -1,14 +1,14 @@
 import taichi as ti
-import meshio
-from initialization import configuration
+#import meshio
+from .initialization import configuration
 
 
 @ti.dataclass
 class FEMvertexData:
-    #mass: ti.f32
-    position: ti.types.vector(n=configuration.dim, dtype=configuration.ftype)
-    velocity: ti.types.vector(n=configuration.dim, dtype=configuration.ftype)
-    acceleration: ti.types.vector(n=configuration.dim, dtype=configuration.ftype)
+    #mass: configuration.ftype
+    position: configuration.vecD_type
+    velocity: configuration.vecD_type
+    acceleration: configuration.vecD_type
 
 
 @ti.dataclass
@@ -18,21 +18,36 @@ class FEMelementData:
 
 @ti.data_oriented
 class FEMobject:
-    def __init__(self, vertex_count=3, element_count=1,*args, **kwargs):
+    def __init__(self, file_name=None,vertex_count=None, element_count=None, vertices_data:FEMvertexData.field =None, elements_data:FEMelementData.field =None,*args, **kwargs):
         #
-        self.vertex_count=vertex_count
-        self.element_count=element_count
+        if file_name is not None:
+            dot_index=-1
+            for i in range(len(file_name)-1,-1,-1):
+                if file_name[i]=='.':
+                    dot_index=i
+                if file_name[i]=='/':
+                    break
+            if dot_index>-1:
+                file_format=file_name[dot_index+1:]
+                #meshes=meshio.read(filename=file_name, file_format=file_format)
+                #
+            else:
+                msg='file is not found or file_name is wrong!'
+                raise FileNotFoundError(msg)
+            #
         #
-        self.vertices_data=ti.field(dtype=FEMvertexData, shape=self.vertex_count)
-        self.elements_data=ti.field(dtype=FEMelementData, shape=self.element_count)
-        # element_type: 'triangle', 'tetrahedron'
-        #return super().__init__(*args, **kwargs)
+        elif (vertex_count is not None) and (element_count is not None) and (vertices_data is not None) and (elements_data is not None):
+            #
+            self.vertex_count=vertex_count
+            self.element_count=element_count
+            #
+            self.vertices_data=vertices_data
+            self.elements_data=elements_data
+            # element_type: 'triangle', 'tetrahedron'
+            #return super().__init__(*args, **kwargs)
 
-    @staticmethod
-    def loadMeshFromFile(file_name:str):
-        
-        pass
+
 
 if __name__ == '__main__':
-    #FEMobject.readFromFile('cube.obj')
-    #FEMobject.readFromFile('cube.ply')
+    pass
+    #fem_object=FEMobject(file_name='/models/bunny/bunny.obj')
