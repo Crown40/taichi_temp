@@ -1,5 +1,5 @@
 import taichi as ti
-#import meshio
+import meshio
 from .initialization import configuration
 
 
@@ -29,7 +29,14 @@ class FEMobject:
                     break
             if dot_index>-1:
                 file_format=file_name[dot_index+1:]
-                #meshes=meshio.read(filename=file_name, file_format=file_format)
+                meshes=meshio.read(filename=file_name, file_format=file_format)
+                # points;point_data[''];    cells[].data,cells_dict[''];cell_data[''],cell_data_dict['']
+                print(meshes.points)
+                print()
+                print(meshes.cells[0].data)
+                print()
+                print(meshes.cells_dict['triangle'])
+
                 #
             else:
                 msg='file is not found or file_name is wrong!'
